@@ -10,34 +10,50 @@ model_dml_r2d2 <- cmdstan_model("dml_r2d2.stan")
 
 ## Function to fit model B ----
 
-fit_model_dml_b <- function(raw_data) {
+fit_model_dml_b <- function(raw_data, variational=TRUE) {
     
     data_list <- create_data_list(raw_data)
-  
-    fitted_dml_b <- model_dml_b$sample(
-        data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
-        chains = 4,
-        parallel_chains = 4,
-        refresh = 0,
-        show_messages = TRUE,
-        show_exceptions = TRUE,
-    )
+    
+    if (variational) {
+        fitted_dml_b <- model_dml_b$variational(
+            data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
+            iter = 5e5,
+            output_samples = 5000
+        )
+    } else {
+        fitted_dml_b <- model_dml_b$sample(
+            data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
+            chains = 4,
+            parallel_chains = 4,
+            refresh = 0,
+            show_messages = TRUE,
+            show_exceptions = TRUE,
+        )
+    }
 }
 
 ## Function to fit model B2 (hierarchical) ----
 
-fit_model_dml_b2 <- function(raw_data) {
+fit_model_dml_b2 <- function(raw_data, variational=TRUE) {
 
     data_list <- create_data_list(raw_data)
-  
-    fitted_dml_b2 <- model_dml_b2$sample(
-        data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
-        chains = 4,
-        parallel_chains = 4,
-        refresh = 0,
-        show_messages = TRUE,
-        show_exceptions = TRUE,
-    )
+
+    if (variational) {
+        fitted_dml_b2 <- model_dml_b2$variational(
+            data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
+            iter = 5e5,
+            output_samples = 5000
+        )
+    } else {
+        fitted_dml_b2 <- model_dml_b2$sample(
+            data = list(K = 2, J = data_list$J, N = data_list$N, x = data_list$X, y = cbind(data_list$Y, data_list$D)),
+            chains = 4,
+            parallel_chains = 4,
+            refresh = 0,
+            show_messages = TRUE,
+            show_exceptions = TRUE,
+        )
+    }
 }
 
 ## Function to fit model R2D2 ----
