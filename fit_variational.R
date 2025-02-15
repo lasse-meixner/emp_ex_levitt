@@ -1,6 +1,7 @@
 library(tidyverse)
 source("src/fit_BDML.R")
 source("src/fit_BLR.R")
+source("src/plot_results.R")
 
 # load data
 
@@ -11,8 +12,8 @@ property_data <- read.csv("data/property_data-2.csv")
 ### fit models on murder data
 
 # STAN BDML MODELS
-murder_fit_b <- fit_model_dml_b(murder_data) |> extract_results_BDML("BDML-Basic") # takes ~18h on my machine
-murder_fit_b2 <- fit_model_dml_b2(murder_data) |> extract_results_BDML("BDML-Hier")
+murder_fit_b <- fit_model_dml_b(murder_data, variational = TRUE) |> extract_results_BDML("BDML-Basic") # takes ~18h on my machine if not using variational approximation
+murder_fit_b2 <- fit_model_dml_b2(murder_data, variational = TRUE) |> extract_results_BDML("BDML-Hier")
 # BLR MODELS
 murder_fit_BRL <- fit_model_BLR(murder_data)
 murder_fit_BRL_naive <- murder_fit_BRL$naive |> extract_results_BLR("Naive")
@@ -32,8 +33,8 @@ write.csv(murder_results_table, "results/murder_results_table.csv")
 ### fit models on violence data
 
 # STAN BDML MODELS
-violence_fit_b <- fit_model_dml_b(violence_data) |> extract_results_BDML("BDML-Basic")
-violence_fit_b2 <- fit_model_dml_b2(violence_data) |> extract_results_BDML("BDML-Hier")
+violence_fit_b <- fit_model_dml_b(violence_data, variational = TRUE) |> extract_results_BDML("BDML-Basic")
+violence_fit_b2 <- fit_model_dml_b2(violence_data, variational = TRUE) |> extract_results_BDML("BDML-Hier")
 # BLR MODELS
 violence_fit_BRL <- fit_model_BLR(violence_data)
 violence_fit_BRL_naive <- violence_fit_BRL$naive |> extract_results_BLR("Naive")
@@ -54,8 +55,8 @@ write.csv(violence_results_table, "results/violence_results_table.csv")
 ### fit models on property data
 
 # STAN BDML MODELS
-property_fit_b <- fit_model_dml_b(property_data) |> extract_results_BDML("BDML-Basic")
-property_fit_b2 <- fit_model_dml_b2(property_data) |> extract_results_BDML("BDML-Hier")
+property_fit_b <- fit_model_dml_b(property_data, variational = TRUE) |> extract_results_BDML("BDML-Basic")
+property_fit_b2 <- fit_model_dml_b2(property_data, variational = TRUE) |> extract_results_BDML("BDML-Hier")
 # BLR MODELS
 property_fit_BRL <- fit_model_BLR(property_data)
 property_fit_BRL_naive <- property_fit_BRL$naive |> extract_results_BLR("Naive")
@@ -71,5 +72,10 @@ property_result_rows <- list(property_fit_b, property_fit_b2, property_fit_BRL_n
 property_results_table <- do.call(rbind, property_result_rows)
 # save to csv
 write.csv(property_results_table, "results/property_results_table.csv")
+
+# plot and save results
+plot_gamma_estimates(property_results_table, "property_gamma_estimates_variational")
+plot_gamma_estimates(murder_results_table, "property_gamma_estimates_variational")
+plot_gamma_estimates(violence_results_table, "property_gamma_estimates_variational")
 
 
